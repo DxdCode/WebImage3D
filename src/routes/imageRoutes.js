@@ -1,12 +1,13 @@
 import express from "express";
 import multer from "multer";
-import { uploadImage, getImages } from "../controllers/imageController.js";
+import { uploadImage, getImages, getOneImage } from "../controllers/imageController.js";
 
 const router = express.Router();
 
-const upload = multer({ dest: "src/uploads/" });
+export const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/", upload.single("image"), uploadImage);
 router.get("/", getImages);
+router.get("/:id", getOneImage);
 
 export default router;
