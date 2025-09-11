@@ -39,8 +39,8 @@ export async function crearModelo3D(imagenCloudinary, imageId) {
         {
           resource_type: "raw",
           folder: "modelos3D",
-          public_id: `modelo_${taskId}.glb`, // Especificar la extensión .glb
-          format: "glb", // Forzar el formato glb
+          public_id: `modelo_${taskId}.glb`, 
+          format: "glb", 
         },
         (error, result) => {
           if (error) {
@@ -82,7 +82,7 @@ export async function crearModelo3D(imagenCloudinary, imageId) {
   }
 }
 
-export async function verificarStatusModelo3D(idImagen, { retryDelay = 20000, timeout = 180000 } = {}) {
+export async function verificarStatusModelo3D(idImagen, { retryDelay = 10000, timeout = 600000} = {}) {
   const startTime = Date.now();
 
   while (true) {

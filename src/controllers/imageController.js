@@ -72,7 +72,8 @@ export const getOneImage = async (req, res) => {
     const imagen = await Image.findById(id);
     if (!imagen) return res.status(404).json({ msg: "No se encontró la imagen" });
 
-    return res.status(200).json(imagen.url);
+    console.log(imagen)
+    return res.status(200).json(imagen);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Error al obtener la imagen" });
