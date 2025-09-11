@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import cloudinary from "../config/cloudinaryConfig.js";
 import Image from "../models/imageModel.js";
-import {removeBackground} from '@imgly/background-removal-node'
+import { removeBackground } from '@imgly/background-removal-node'
 import { Blob } from "buffer";
 
 
@@ -21,7 +21,11 @@ export const uploadImage = async (req, res) => {
     const streamUpload = (buffer) => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-          { folder: "uploads" },
+          {
+            folder: "uploads",
+            format: "webp",      
+            quality: "auto"     
+          },
           (error, result) => {
             if (result) resolve(result);
             else reject(error);
@@ -41,11 +45,7 @@ export const uploadImage = async (req, res) => {
     return res.status(201).json(newImage);
 
   } catch (error) {
-    console.error("Error al subir la imagen:", error);
-    return res.status(500).json({ 
-      msg: "Error al subir la imagen con fondo eliminado", 
-      error: error.message 
-    });
+    return res.status(500).json({ msg: "Error al subir la imagen " })
   }
 };
 // Obtener imágenes

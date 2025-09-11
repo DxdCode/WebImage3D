@@ -17,6 +17,7 @@
   "type": "module",
   "dependencies": {
     "@imgly/background-removal-node": "^1.4.5",
+    "axios": "^1.11.0",
     "cloudinary": "^2.7.0",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
