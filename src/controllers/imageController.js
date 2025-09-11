@@ -12,19 +12,27 @@ export const uploadImage = async (req, res) => {
       return res.status(400).json({ msg: "No se ha enviado ningún archivo" });
     }
 
-    // 🔹 Convertir a PNG para compatibilidad
-    const inputBuffer = await sharp(req.file.buffer).png().toBuffer();
+    const imageBlob = new Blob([req.file.buffer], { type: req.file.mimetype });
 
-    // 🔹 Eliminar fondo directamente desde buffer
-    const outputBuffer = await removeBackground(inputBuffer);
+    const resultBlob = await removeBackground(imageBlob);
 
-    // 🔹 Subir a Cloudinary desde buffer
-    const result = await cloudinary.uploader.upload(
-      `data:image/png;base64,${outputBuffer.toString("base64")}`,
-      { folder: "uploads" }
-    );
+    const processedBuffer = Buffer.from(await resultBlob.arrayBuffer());
 
-    // 🔹 Guardar en MongoDB
+    const streamUpload = (buffer) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "uploads" },
+          (error, result) => {
+            if (result) resolve(result);
+            else reject(error);
+          }
+        );
+        stream.end(buffer);
+      });
+    };
+
+    const result = await streamUpload(processedBuffer);
+
     const newImage = await Image.create({
       url: result.secure_url,
       public_id: result.public_id,
@@ -34,9 +42,9 @@ export const uploadImage = async (req, res) => {
 
   } catch (error) {
     console.error("Error al subir la imagen:", error);
-    return res.status(500).json({
-      msg: "Error al subir la imagen con fondo eliminado",
-      error: error.message,
+    return res.status(500).json({ 
+      msg: "Error al subir la imagen con fondo eliminado", 
+      error: error.message 
     });
   }
 };
