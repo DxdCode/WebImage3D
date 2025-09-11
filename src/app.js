@@ -11,8 +11,12 @@ app.use(express.json());
 
 app.use("/api/images", imageRoutes);
 
+
 app.get("/",(req,res)=>{
     res.send({msg:"Bienvenido"})
 })
+
 const PORT = process.env.PORT || 5000;
+app.use(express.static("src/public"));
+
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto  http://localhost:${PORT}`));
