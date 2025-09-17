@@ -82,7 +82,7 @@ export async function crearModelo3D(imagenCloudinary, imageId) {
   }
 }
 
-export async function verificarStatusModelo3D(idImagen, { retryDelay = 10000, timeout = 600000} = {}) {
+export async function verificarStatusModelo3D(idImagen, { retryDelay = 10000, timeout = 900000 } = {}) {
   const startTime = Date.now();
 
   while (true) {
