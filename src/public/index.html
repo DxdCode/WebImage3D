@@ -1,63 +1,110 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Imágenes y Modelos 3D</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-    <script src="https://unpkg.com/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://unpkg.com/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; }
-        header { background:#1e40af; color:#fff; padding:1rem; text-align:center; }
-        .container { max-width:1000px; margin:2rem auto; padding:1rem; background:white; border-radius:10px; }
-        .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; }
-        .card { border:1px solid #ddd; border-radius:8px; padding:1rem; background:#fafafa; text-align:center; }
-        .card img { width:100%; border-radius:6px; height:150px; object-fit:cover; }
-        button { background:#1e40af; color:white; border:none; padding:0.5rem 1rem; border-radius:5px; cursor:pointer; margin:0.2rem; }
-        button:hover { background:#2563eb; }
-        .viewer-container { width:100%; height:400px; background:#ddd; border-radius:10px; margin-top:1rem; position:relative; }
-        canvas, #detailImg { width:100%; height:100%; object-fit:contain; }
-        #detailImg { display:none; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Imágenes y Modelos 3D</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://unpkg.com/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; }
+    header { background:#1e40af; color:#fff; padding:1rem; text-align:center; font-size:1.3rem; }
+    .container { max-width:1000px; margin:2rem auto; padding:1rem; background:white; border-radius:10px; }
+
+    section { margin-bottom:2rem; }
+    section h2 { margin-bottom:1rem; border-bottom:2px solid #ddd; padding-bottom:0.5rem; }
+
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; }
+    .card { border:1px solid #ddd; border-radius:8px; padding:1rem; background:#fafafa; text-align:center; transition:0.2s; }
+    .card:hover { transform:scale(1.02); box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+    .card img { width:100%; border-radius:6px; height:150px; object-fit:cover; }
+
+    button { background:#1e40af; color:white; border:none; padding:0.5rem 1rem; border-radius:5px; cursor:pointer; margin:0.2rem; }
+    button:hover { background:#2563eb; }
+
+    /* --- Detalle estilo tipo producto --- */
+    #detail { display:none; }
+    .detail-card { display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:start; }
+    .viewer-container { width:100%; height:400px; background:#ddd; border-radius:10px; position:relative; }
+    canvas, #detailImg { width:100%; height:100%; object-fit:contain; border-radius:10px; }
+    #detailImg { display:none; }
+
+    .product-info h3 { margin:0; font-size:1.4rem; }
+    .price { font-size:1.2rem; margin:0.5rem 0; color:#1e40af; }
+    .old-price { text-decoration:line-through; color:#777; margin-left:0.5rem; }
+    .discount { color:green; font-weight:bold; margin-left:0.5rem; }
+    .availability { margin:0.5rem 0; }
+    .vendor { font-size:0.9rem; color:#555; }
+    .actions { margin-top:1rem; }
+  </style>
 </head>
 <body>
 
 <header>API Imágenes & Modelos 3D</header>
 
 <div class="container">
+
+  <!-- Subir -->
+  <section>
     <h2>Subir Imagen</h2>
     <form id="uploadForm">
-        <input type="file" name="image" required />
-        <button type="submit">Subir</button>
+      <input type="file" name="image" required />
+      <button type="submit">Subir</button>
     </form>
     <p id="uploadMsg"></p>
+  </section>
 
-    <h2>Listado</h2>
+  <!-- Listado -->
+  <section>
+    <h2>Listado de Imágenes</h2>
     <div id="imagesGrid" class="grid"></div>
+  </section>
 
+  <!-- Detalle -->
+  <section id="detail">
     <h2>Detalle</h2>
-    <div id="detail" style="display:none">
-        <div class="viewer-container">
+    <div class="detail-card">
+      <div class="viewer-container">
         <canvas id="threeCanvas"></canvas>
-            <img id="detailImg" />
+        <img id="detailImg" />
+      </div>
+      <div class="product-info">
+        <h3 id="prodName">Auriculares inalámbricos SoundPro 300</h3>
+        <p class="price">
+          $42.87
+          <span class="old-price">$51.44</span>
+          <span class="discount">20% OFF</span>
+        </p>
+        <p>Auriculares Bluetooth con cancelación activa de ruido y batería de larga duración.</p>
+        <p class="availability"><b>Disponibilidad:</b> Agotado</p>
+        <p class="vendor"><b>Vendedor:</b> Vendedor Poliventas — <b>Vendidos:</b> 28</p>
+        
+        <div class="actions">
+          <label>Cantidad:</label>
+          <input type="number" value="1" min="1" style="width:50px; margin:0 0.5rem;">
+          <button>Agregar al carrito</button>
         </div>
-        <div>
-            <button id="btnShowImg">Ver Imagen</button>
-            <button id="btnShow3D">Ver Modelo 3D</button>
-            <button id="btnGenerate">Generar Modelo</button>
+
+        <div style="margin-top:1rem;">
+          <button id="btnShowImg">Ver Imagen</button>
+          <button id="btnShow3D">Ver Modelo 3D</button>
+          <button id="btnGenerate">Generar Modelo</button>
         </div>
-        <pre id="jsonData" style="background:#eee;padding:1rem;border-radius:8px;overflow:auto;"></pre>
+      </div>
     </div>
+
+    <pre id="jsonData" style="background:#eee;padding:1rem;border-radius:8px;overflow:auto;margin-top:1rem;"></pre>
+  </section>
+
 </div>
 
 <script>
-// --- VARIABLES GLOBALES ---
 const API_BASE = "http://localhost:3000/api/images";
 let currentId = null;
 let currentViewer = null;
 
-// --- SUBIR IMAGEN ---
+// Subir imagen
 document.getElementById("uploadForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
@@ -72,7 +119,7 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
   }
 });
 
-// --- LISTAR IMÁGENES ---
+// Listar
 async function loadImages() {
   const grid = document.getElementById("imagesGrid");
   grid.innerHTML = "Cargando...";
@@ -95,7 +142,7 @@ async function loadImages() {
   }
 }
 
-// --- VER DETALLE ---
+// Ver detalle
 async function viewDetail(id) {
   currentId = id;
   const detail = document.getElementById("detail");
@@ -114,10 +161,7 @@ async function viewDetail(id) {
     img.style.display = "block";
     canvas.style.display = "none";
 
-    // Crear visor 3D
     currentViewer = createViewer(canvas);
-
-    // Si existe modelo, lo carga pero no lo muestra
     if (data.url_model) {
       await currentViewer.loadModel(data.url_model);
     }
@@ -126,7 +170,7 @@ async function viewDetail(id) {
   }
 }
 
-// --- CREAR VISOR 3D ---
+// Crear visor 3D
 function createViewer(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   const scene = new THREE.Scene();
@@ -181,51 +225,37 @@ function createViewer(canvas) {
   };
 }
 
-// --- BOTONES IMG / 3D ---
+// Botones
 document.getElementById("btnShow3D").addEventListener("click", () => {
   document.getElementById("threeCanvas").style.display = "block";
   document.getElementById("detailImg").style.display = "none";
 });
-
 document.getElementById("btnShowImg").addEventListener("click", () => {
   document.getElementById("threeCanvas").style.display = "none";
   document.getElementById("detailImg").style.display = "block";
 });
-
-// --- BOTÓN GENERAR MODELO 3D ---
 document.getElementById("btnGenerate").addEventListener("click", async () => {
   if (!currentId) return alert("Selecciona primero una imagen");
-
   const btn = document.getElementById("btnGenerate");
   btn.textContent = "Generando...";
   btn.disabled = true;
-
   try {
     const res = await fetch(`${API_BASE}/generate/${currentId}`, { method: "POST" });
     const data = await res.json();
-
-    // Actualiza JSON y carga el modelo 3D
     document.getElementById("jsonData").textContent = JSON.stringify(data, null, 2);
     if (data.url_model && currentViewer) {
       await currentViewer.loadModel(data.url_model);
       document.getElementById("threeCanvas").style.display = "block";
       document.getElementById("detailImg").style.display = "none";
     }
-
-    btn.textContent = "Generar Modelo";
-    btn.disabled = false;
   } catch (err) {
-    console.error(err);
     alert("Error generando modelo 3D");
-    btn.textContent = "Generar Modelo";
-    btn.disabled = false;
   }
+  btn.textContent = "Generar Modelo";
+  btn.disabled = false;
 });
 
-// --- INICIAL ---
 loadImages();
 </script>
-
-
 </body>
 </html>
