@@ -1,28 +1,16 @@
 {
   "name": "webimage3d",
-  "version": "1.0.0",
-  "description": "\"# WebImage3D\"",
-  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "fronted"
+  ],
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "node --watch src/app.js"
+    "dev:backend": "npm --workspace backend run dev",
+    "dev:fronted": "npm --workspace fronted run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:fronted\""
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github-personal:DxdCode/WebImage3D.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  "dependencies": {
-    "@imgly/background-removal-node": "^1.4.5",
-    "axios": "^1.11.0",
-    "cloudinary": "^2.7.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.2",
-    "express": "^5.1.0",
-    "mongoose": "^8.18.1",
-    "multer": "^2.0.2"
+  "devDependencies": {
+    "concurrently": "^8.2.0"
   }
 }
