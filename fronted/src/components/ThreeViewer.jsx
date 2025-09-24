@@ -4,17 +4,25 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 const ThreeViewer = ({ canvasRef, modelUrl }) => {
-  const viewerRef = useRef(null);
+  const viewerRef = useRef({});
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
+
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.1;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      canvas.clientWidth / canvas.clientHeight,
+      0.1,
+      1000
+    );
     camera.position.z = 5;
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -30,51 +38,60 @@ const ThreeViewer = ({ canvasRef, modelUrl }) => {
     let model = null;
     const loader = new GLTFLoader();
 
-    const resizeRenderer = () => {
+    viewerRef.current.loadModel = async (url) => {
+      if (!url) return;
+      if (model) {
+        scene.remove(model);
+        model.traverse((obj) => {
+          if (obj.isMesh) {
+            obj.geometry.dispose();
+            if (Array.isArray(obj.material)) {
+              obj.material.forEach((m) => m.dispose());
+            } else {
+              obj.material.dispose();
+            }
+          }
+        });
+      }
+      return new Promise((resolve, reject) => {
+        loader.load(
+          url,
+          (gltf) => {
+            model = gltf.scene;
+            model.scale.set(3.5, 3.5, 3.5);
+            scene.add(model);
+            resolve();
+          },
+          undefined,
+          reject
+        );
+      });
+    };
+
+    // Animación
+    const animate = () => {
+      requestAnimationFrame(animate);
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
-    };
 
-    const animate = () => {
-      requestAnimationFrame(animate);
-      resizeRenderer();
       controls.update();
       renderer.render(scene, camera);
     };
     animate();
 
-    viewerRef.current = {
-      async loadModel(url) {
-        if (model) {
-          scene.remove(model);
-          model.traverse(obj => {
-            if (obj.isMesh) {
-              obj.geometry.dispose();
-              obj.material.dispose();
-            }
-          });
-        }
-        return new Promise((resolve, reject) => {
-          loader.load(url, (gltf) => {
-            model = gltf.scene;
-            model.scale.set(3.5, 3.5, 3.5);
-            scene.add(model);
-            resolve();
-          }, undefined, reject);
-        });
-      }
-    };
-
-    if (modelUrl) {
-      viewerRef.current.loadModel(modelUrl);
-    }
-
     return () => {
       renderer.dispose();
+      if (model) scene.remove(model);
     };
+  }, [canvasRef]);
+
+  useEffect(() => {
+    if (viewerRef.current.loadModel && modelUrl) {
+      viewerRef.current.loadModel(modelUrl);
+    }
   }, [modelUrl]);
 
   return null;
