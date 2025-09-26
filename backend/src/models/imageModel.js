@@ -13,7 +13,6 @@ const imageSchema = new mongoose.Schema({
 
   meta: {
     ip: { type: String },
-    userAgent: { type: String },
   }
 }, { timestamps: true });
 
