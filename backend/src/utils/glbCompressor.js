@@ -3,8 +3,13 @@ import { textureCompress } from "@gltf-transform/functions";
 import sharp from "sharp";
 import fs from "fs/promises";
 import path from "path";
+import { fileURLToPath } from "url";
 
-const tempDir = path.join(process.cwd(), "backend", "src", "temp");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const tempDir = path.join(__dirname, "src", "temp");
+
 
 async function ensureTempDir() {
   await fs.mkdir(tempDir, { recursive: true });
@@ -25,7 +30,7 @@ export async function compressGLBBuffer(buffer) {
     textureCompress({
       encoder: sharp,
       targetFormat: "webp",
-      resize: [2048, 2048], // compresión suave
+      resize: [2048, 2048], 
     })
   );
 
