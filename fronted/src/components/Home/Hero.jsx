@@ -20,7 +20,7 @@ const Hero = () => {
                 <div className="flex flex-col sm:flex-row items-center gap-3">
                     <button
                         onClick={() => alert('Generando modelo 3D...')}
-                        className="flex items-center gap-2 px-6 py-3 rounded-md bg-black/80 text-white dark:bg-gray-700 hover:scale-105 transition w-full sm:w-auto justify-center"
+                        className="flex items-center gap-2 px-6 py-3 rounded-md bg-black/80 text-white dark:bg-neutral-800 hover:scale-105 transition w-full sm:w-auto justify-center"
                     >
                         <PlayCircle size={18} />
                         Generar Ahora
@@ -28,7 +28,7 @@ const Hero = () => {
 
                     <button
                         onClick={() => setIsPaused(!isPaused)}
-                        className="flex items-center gap-2 px-6 py-3 rounded-md bg-black/80 text-white dark:bg-gray-700 hover:scale-105 transition w-full sm:w-auto justify-center"
+                        className="flex items-center gap-2 px-6 py-3 rounded-md bg-black/80 text-white dark:bg-neutral-800 hover:scale-105 transition w-full sm:w-auto justify-center"
                     >
                         {isPaused ? <Play size={18} /> : <Pause size={18} />}
                         {isPaused ? "Reanudar animación" : "Pausar animación"}

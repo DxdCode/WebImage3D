@@ -23,7 +23,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-green-900 dark:bg-gray-900 text-white">
+    <div className="w-screen h-screen flex flex-col bg-green-900 dark:bg-neutral-900 text-white">
       {/* Navbar arriba */}
       <Navbar />
 
@@ -31,7 +31,7 @@ const LoginForm = () => {
       <div className="flex-grow flex items-center justify-center">
         <form
           onSubmit={handleSubmit}
-          className="w-full h-full sm:w-1/3 sm:h-1/4 flex flex-col justify-center px-8 md:px-32 bg-green-900 dark:bg-gray-900"
+          className="w-full h-full sm:w-1/3 sm:h-1/4 flex flex-col justify-center px-8 md:px-32 bg-green-900 dark:bg-neutral-900"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center">Iniciar Sesión</h2>
 
@@ -47,7 +47,7 @@ const LoginForm = () => {
                 onChange={handleChange}
                 placeholder="tu@email.com"
                 required
-                className="w-full pl-10 pr-4 py-4 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-lg"
+                className="w-full pl-10 pr-4 py-4 border rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 bg-white dark:bg-neutral-700 text-gray-800 dark:text-neutral-100 text-lg"
               />
             </div>
           </div>
@@ -64,7 +64,7 @@ const LoginForm = () => {
                 onChange={handleChange}
                 placeholder="••••••••"
                 required
-                className="w-full pl-10 pr-4 py-4 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-lg"
+                className="w-full pl-10 pr-4 py-4 border rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-purple-500 bg-white dark:bg-neutral-700 text-neutral-800 dark:text-gray-100 text-lg"
               />
             </div>
           </div>
