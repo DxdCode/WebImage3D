@@ -1,17 +1,19 @@
 import express from "express";
-import { createUser,  refreshToken, logoutUser, loginUser } from "../controllers/userController.js";
+import { createUser, refreshToken, logoutUser, loginUser, verifyAuth } from "../controllers/userController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-// Registro 
+// Registro y login (rutas públicas)
 router.post("/register", createUser);
 router.post("/login", loginUser);
 
-// Refrescar token
-router.post("/refresh", refreshToken);
+// Refrescar token (ruta pública)
+router.get("/refresh", refreshToken);
 
-// Cerrar sesión
-router.post("/logout", logoutUser);
+// Rutas protegidas
+router.get("/verify", authMiddleware, verifyAuth);
+router.post("/logout", authMiddleware, logoutUser);
 
 
 export default router;

@@ -5,6 +5,7 @@ const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
   sameSite: "strict",
+
 };
 
 const ACCESS_EXPIRES = "15m";
@@ -20,19 +21,47 @@ export const createRefreshToken = (payload) =>
 // Middleware para proteger rutas
 export const authMiddleware = async (req, res, next) => {
   try {
-    const token = req.cookies?.access_token;
-    if (!token) return res.status(401).json({ msg: "No autorizado, token faltante" });
+    // Verificar access token
+    const accessToken = req.cookies?.access_token;
+    if (!accessToken) {
+      return res.status(401).json({ msg: "No autorizado, token faltante" });
+    }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded?.id) return res.status(401).json({ msg: "Token inválido" });
+    try {
+      const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).select("-password");
+      if (!user) {
+        return res.status(404).json({ msg: "Usuario no encontrado" });
+      }
+      req.user = user;
+      return next();
+    } catch (tokenError) {
+      // Si el access token es inválido, intentamos usar el refresh token
+      const refreshToken = req.cookies?.refresh_token;
+      if (!refreshToken) {
+        return res.status(401).json({ msg: "Token inválido y no hay refresh token" });
+      }
 
-    const user = await User.findById(decoded.id).select("-password");
-    if (!user) return res.status(404).json({ msg: "Usuario no encontrado" });
+      try {
+        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+        const user = await User.findById(decoded.id).select("-password");
+        if (!user) {
+          return res.status(404).json({ msg: "Usuario no encontrado" });
+        }
 
-    req.user = user;
-    next();
+        // Generar nuevo access token
+        const newAccessToken = createAccessToken({ id: user._id });
+        res.cookie("access_token", newAccessToken, { ...cookieOptions, maxAge: 15 * 60 * 1000 });
+
+        req.user = user;
+        return next();
+      } catch (refreshError) {
+        return res.status(401).json({ msg: "Ambos tokens son inválidos" });
+      }
+    }
   } catch (error) {
-    return res.status(401).json({ msg: "Token inválido o expirado" });
+    console.error("Error en authMiddleware:", error);
+    return res.status(401).json({ msg: "Error de autenticación" });
   }
 };
 
@@ -46,22 +75,32 @@ export const setAuthCookies = (res, userId) => {
 };
 
 // Refresh token
-export const handleRefreshToken = (req, res) => {
-  const token = req.cookies?.refresh_token;
-  if (!token) return res.status(401).json({ msg: "Refresh token faltante" });
+export const handleRefreshToken = async (req, res) => {
+  try {
+    const token = req.cookies?.refresh_token;
+    if (!token) {
+      clearAuthCookies(res);
+      return res.status(401).json({ msg: "Refresh token faltante" });
+    }
 
-  jwt.verify(token, process.env.JWT_REFRESH_SECRET, (err, decoded) => {
-    if (err) return res.status(403).json({ msg: "Refresh token inválido" });
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      clearAuthCookies(res);
+      return res.status(404).json({ msg: "Usuario no encontrado" });
+    }
 
-    const newAccessToken = createAccessToken({ id: decoded.id });
-    res.cookie("access_token", newAccessToken, { ...cookieOptions, maxAge: 15 * 60 * 1000 });
-
-    return res.json({ msg: "Access token renovado" });
-  });
+    // Renovar ambos tokens
+    setAuthCookies(res, user._id);
+    return res.json({ msg: "Tokens renovados", user });
+  } catch (error) {
+    clearAuthCookies(res);
+    return res.status(401).json({ msg: "Refresh token inválido" });
+  }
 };
 
 // Logout
 export const clearAuthCookies = (res) => {
-  res.clearCookie("access_token");
-  res.clearCookie("refresh_token");
+  res.clearCookie("access_token", { ...cookieOptions });
+  res.clearCookie("refresh_token", { ...cookieOptions });
 };

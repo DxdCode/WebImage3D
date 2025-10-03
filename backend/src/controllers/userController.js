@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import Image from "../models/imageModel.js";
+import jwt from "jsonwebtoken";
 import {setAuthCookies,clearAuthCookies,handleRefreshToken} from "../middlewares/authMiddleware.js";
 
 // Crear usuario
@@ -55,4 +56,12 @@ export const refreshToken = (req, res) => handleRefreshToken(req, res);
 export const logoutUser = (req, res) => {
   clearAuthCookies(res);
   return res.json({ msg: "Sesión cerrada" });
+};
+
+// Verificar autenticación
+export const verifyAuth = async (req, res) => {
+  return res.status(200).json({
+    msg: "Token válido",
+    user: req.user
+  });
 };
