@@ -1,7 +1,7 @@
 import axios from "axios";
 import cloudinary from "../config/cloudinaryConfig.js";
 import Image from "../models/imageModel.js";
-import { compressGLBBuffer } from "./glbCompressor.js"; // <--- aquí importamos el compresor
+import { compressGLBBuffer } from "./glbCompressor.js"; 
 
 const headers = { Authorization: `Bearer ${process.env.MESHY_API_TOKEN}` };
 
@@ -87,7 +87,7 @@ export async function crearModelo3D(imagenCloudinary, imageId, ip = null) {
   }
 }
 
-// 🔄 Verifica el estado del modelo
+// Verifica el estado del modelo
 export async function verificarStatusModelo3D(idImagen, { retryDelay = 10000, timeout = 900000 } = {}) {
   const startTime = Date.now();
 
