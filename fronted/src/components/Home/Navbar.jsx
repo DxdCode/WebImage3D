@@ -1,7 +1,5 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Box } from 'lucide-react';
-import ThemeToggle from '../ThemeToggle'
 
 const Navbar = () => {
   return (
@@ -27,8 +25,6 @@ const Navbar = () => {
         </Link>
       </div>
 
-      {/* Theme Toggle */}
-      <ThemeToggle />
     </nav>
   );
 };
