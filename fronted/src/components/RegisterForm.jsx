@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import { User, Mail, Lock, Loader2 } from 'lucide-react';
-import useAuthStore from '../store/useAuthStore';
+import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 import Navbar from './Home/Navbar';
 import Footer from './Home/Footer';
+import api from '../utils/api';
 
-const RegisterForm = ({ onSuccess }) => {
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
-  const { register, isLoading } = useAuthStore();
+const RegisterForm = () => {
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,21 +23,40 @@ const RegisterForm = ({ onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, password } = form;
-    const result = await register(name, email, password);
-    if (result.success) onSuccess?.();
+
+    if (form.password !== form.confirmPassword) {
+      toast.error("Las contraseñas no coinciden.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      const res = await api.post('/user/register', {
+        nombre: form.name,
+        correo: form.email,
+        password: form.password
+      });
+
+      const backendMsg = res.data?.msg || "Registro exitoso";
+      toast.success(backendMsg);
+      setTimeout(() => navigate('/login', { replace: true }), 2000);
+    } catch (err) {
+      const errorMsg = err.response?.data?.msg || err.message || "Error al registrar";
+      toast.error(errorMsg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="w-screen h-screen bg-green-900 dark:bg-neutral-900 text-white flex flex-col">
-      {/* Navbar separado arriba */}
       <Navbar />
 
-      {/* Form centrado */}
       <div className="flex-grow flex items-center justify-center">
         <form
           onSubmit={handleSubmit}
-          className="w-full h-full sm:w-1/3 sm:h-1/4 flex flex-col justify-center px-8 md:px-32 bg-green-900 dark:bg-neutral-900"
+          className="w-full lg:w-2/5 md:w-2/3 h-auto sm:h-1/4 bg-green-900 dark:bg-neutral-900 flex flex-col justify-center px-8 md:px-32"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center">Registrarse</h2>
 
@@ -62,7 +89,7 @@ const RegisterForm = ({ onSuccess }) => {
                 onChange={handleChange}
                 placeholder="tu@email.com"
                 required
-                className="w-full pl-10 pr-4 py-4 border rounded-lg focus:ring-2 focus:neutral-purple-500 focus:border-neutral-500 bg-white dark:bg-neutral-700 text-gray-800 dark:text-gray-100 text-lg"
+                className="w-full pl-10 pr-4 py-4 border rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 bg-white dark:bg-neutral-700 text-gray-800 dark:text-gray-100 text-lg"
               />
             </div>
           </div>
@@ -119,7 +146,9 @@ const RegisterForm = ({ onSuccess }) => {
         </form>
       </div>
 
-      <Footer/>
+      <Footer />
+      {/* Toastify container */}
+      <ToastContainer position="top-right" autoClose={2000} theme="dark" />
     </div>
   );
 };
