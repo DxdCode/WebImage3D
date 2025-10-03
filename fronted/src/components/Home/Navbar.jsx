@@ -5,7 +5,7 @@ import ThemeToggle from '../ThemeToggle'
 
 const Navbar = () => {
   return (
-    <nav className="flex flex-row items-center sm:justify-between justify-evenly px-4 md:px-28 py-4 bg-green-900 dark:bg-neutral-900 relative">
+    <nav className="flex flex-row items-center justify-between px-4 md:px-28 py-4 bg-green-900 dark:bg-neutral-900 relative">
       <Link className="flex items-center text-2xl md:text-3xl mb-2 md:mb-0" to="/">
         <Box size={28} className="mr-1 text-white" />
         <span className="text-white font-semibold">Dxd</span>

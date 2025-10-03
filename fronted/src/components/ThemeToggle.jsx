@@ -13,7 +13,6 @@ const ThemeToggle = () => {
     localStorage.setItem('theme', newTheme);
   };
 
-  // aplicar tema al cargar la página
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
@@ -21,7 +20,7 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="fixed right-4 p-3 rounded-full bg-neutral-900 dark:bg-white dark:hover:bg-white/50 transition-all duration-300 shadow-lg z-50"
+      className="fixed right-4 bottom-4 p-3 rounded-full bg-neutral-900 dark:bg-white dark:hover:bg-white/50 transition-all duration-300 shadow-lg z-50"
       aria-label="Toggle theme"
     >
       {theme === 'light' ? (
