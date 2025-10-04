@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import useAuthStore from "./store/useAuthStore";
 import ThemeToggle from "./components/ThemeToggle";
+import ImageManager from "./components/ImageManger";
 
 function App() {
   const checkAuth = useAuthStore(state => state.checkAuth);
@@ -39,6 +40,14 @@ function App() {
           element={
             <PublicRoute>
               <RegisterForm />
+            </PublicRoute>
+          }
+        />
+                <Route
+          path="/models"
+          element={
+            <PublicRoute>
+              <ImageManager />
             </PublicRoute>
           }
         />
