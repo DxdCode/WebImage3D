@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, Environment, useGLTF, Center } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, Environment, useGLTF } from '@react-three/drei';
 import { Suspense } from 'react';
 
 export default function Model3DViewer({ isGenerating }) {
@@ -8,7 +8,10 @@ export default function Model3DViewer({ isGenerating }) {
     const { scene } = useGLTF(
       'https://res.cloudinary.com/dqeyggnvv/raw/upload/v1758863155/modelos3D/modelo_01998465-f57a-78ba-a6b1-11f55c08444e.glb'
     );
-    return <primitive object={scene} scale={2} />;
+
+    return (
+      <primitive object={scene} scale={1} position={[0, 1, 0]} />
+    );
   };
 
   const LoadingBox = () => (
