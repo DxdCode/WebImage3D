@@ -6,8 +6,8 @@ function ImageManger() {
     return (
         <>
             <ToastContainer />
-                <Navbar />
-                    <ImageUpload3D />
+            <Navbar />
+            <ImageUpload3D />
         </>
     );
 }

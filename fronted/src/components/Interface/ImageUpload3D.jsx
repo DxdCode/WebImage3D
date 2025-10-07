@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react';
-import Header from './Header';
 import LeftSidebar from './LeftSidebar';
 import CenterViewer from './CenterViewer';
 import RightSidebar from './RightSidebar';
@@ -8,6 +7,12 @@ function ImageUpload3D() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [modelGenerated, setModelGenerated] = useState(false);
+
+  // Estados nuevos para acciones del 3D
+  const [cameraMode, setCameraMode] = useState('default'); // 'default' o 'top'
+  const [lightingOn, setLightingOn] = useState(true);
+  const [resetFlag, setResetFlag] = useState(false);
+
   const fileInputRef = useRef(null);
 
   const handleImageSelect = (e) => {
@@ -39,9 +44,22 @@ function ImageUpload3D() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  // Acciones para los botones extra
+  const onResetCamera = () => {
+    setResetFlag((prev) => !prev);
+  };
+
+  const onToggleCameraMode = () => {
+    setCameraMode((prev) => (prev === 'default' ? 'top' : 'default'));
+  };
+
+  const onToggleLighting = () => {
+    setLightingOn((prev) => !prev);
+  };
+
   return (
-    <div className="min-h-screen w-full flex flex-col bg-green-900 dark:bg-neutral-900 text-white">
-      <div className="flex-1 flex overflow-hidden">
+    <div className="min-h-screen w-full flex flex-col bg-green-900 dark:bg-neutral-900 text-white pt-[72px]">
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         <LeftSidebar
           selectedImage={selectedImage}
           fileInputRef={fileInputRef}
@@ -49,6 +67,10 @@ function ImageUpload3D() {
           handleClearImage={handleClearImage}
           handleGenerateModel={handleGenerateModel}
           isGenerating={isGenerating}
+          modelGenerated={modelGenerated}
+          onResetCamera={onResetCamera}
+          onToggleCameraMode={onToggleCameraMode}
+          onToggleLighting={onToggleLighting}
         />
         <CenterViewer
           selectedImage={selectedImage}
@@ -60,4 +82,5 @@ function ImageUpload3D() {
     </div>
   );
 }
-export default ImageUpload3D
+
+export default ImageUpload3D;
